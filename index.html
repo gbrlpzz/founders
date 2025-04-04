@@ -31,10 +31,6 @@
             background-color: rgba(68, 68, 68, 0.9) !important;
             color: white !important;
         }
-        .hovertext text { /* Attempt to style hover text if needed */
-            fill: white !important;
-        }
-
     </style>
 </head>
 <body>
@@ -47,46 +43,45 @@
         // Expanded and cleaned dataset for 105 groups
         const dataset = [
              // Ensure data includes: Name, Year, Average Age, Median Age, Members, Category, Min Age Clean, Max Age Clean
-            // Using cleaned numeric values where possible. null indicates missing data.
-            {'Name': 'Confucius and Disciples', 'Median Age': 31.0, 'Average Age': 33.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Lu state, China', 'Year': -501, 'Min Age Clean': 15.0, 'Max Age Clean': 30.0},
-            {'Name': "Aristotle's Lyceum", 'Median Age': 38.0, 'Average Age': 40.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Athens, Greece', 'Year': -335, 'Min Age Clean': 18.0, 'Max Age Clean': 50.0},
-            {'Name': 'Christian Apostles (Core Group, Estimated)', 'Median Age': 29.0, 'Average Age': 27.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Galilee, Roman Judea', 'Year': 28, 'Min Age Clean': 22.0, 'Max Age Clean': 29.0},
-            {'Name': 'Companions of Muhammad (Select Early)', 'Median Age': 30.0, 'Average Age': 26.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Mecca/Medina, Arabia', 'Year': 610, 'Min Age Clean': 9.0, 'Max Age Clean': 40.0},
-            {'Name': 'Franciscans (Order of Friars Minor, Initial Companions)', 'Median Age': 26.0, 'Average Age': 26.0, 'Members': 12, 'Category': 'Religion', 'Place': 'Assisi, Italy', 'Year': 1209, 'Min Age Clean': 20.0, 'Max Age Clean': 28.0},
-            {'Name': 'Magna Carta Barons (Guarantors Select)', 'Median Age': 56.5, 'Average Age': 55.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Runnymede, UK', 'Year': 1215, 'Min Age Clean': 40.0, 'Max Age Clean': 60.0},
-            {'Name': 'Jesuits (Society of Jesus)', 'Median Age': 30.0, 'Average Age': 33.0, 'Members': 7, 'Category': 'Religion', 'Place': 'Rome, Italy', 'Year': 1540, 'Min Age Clean': 25.0, 'Max Age Clean': 49.0},
-            {'Name': 'Royal Society Founders', 'Median Age': 36.5, 'Average Age': 37.0, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'London, UK', 'Year': 1660, 'Min Age Clean': 28.0, 'Max Age Clean': 40.0},
-            {'Name': 'Scottish Enlightenment Figures', 'Median Age': 39.0, 'Average Age': 41.0, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Edinburgh/Glasgow, UK', 'Year': 1750, 'Min Age Clean': 27.0, 'Max Age Clean': 40.0},
-            {'Name': 'Lunar Society of Birmingham', 'Median Age': 39.5, 'Average Age': 37.0, 'Members': 10, 'Category': 'Science & Philosophy', 'Place': 'Birmingham, UK', 'Year': 1775, 'Min Age Clean': 22.0, 'Max Age Clean': 47.0},
-            {'Name': 'US Founding Fathers (Signers)', 'Median Age': 45.0, 'Average Age': 44.0, 'Members': 56, 'Category': 'Politics & Activism', 'Place': 'Philadelphia, PA, USA', 'Year': 1776, 'Min Age Clean': 26.0, 'Max Age Clean': 70.0},
-            {'Name': 'Committee of Public Safety (Initial)', 'Median Age': 42.0, 'Average Age': 44.0, 'Members': 9, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1793, 'Min Age Clean': 30.0, 'Max Age Clean': 40.0},
-            {'Name': 'First Quorum of the Twelve Apostles', 'Median Age': 28.5, 'Average Age': 28.0, 'Members': 12, 'Category': 'Religion', 'Place': 'Kirtland, OH, USA', 'Year': 1835, 'Min Age Clean': 24.0, 'Max Age Clean': 36.0},
-            {'Name': 'Bábí Faith (Letters of the Living Select)', 'Median Age': 26.0, 'Average Age': 27.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Shiraz, Persia', 'Year': 1844, 'Min Age Clean': 18.0, 'Max Age Clean': 30.0},
-            {'Name': 'Pre-Raphaelite Brotherhood', 'Median Age': 21.0, 'Average Age': 21.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1848, 'Min Age Clean': 19.0, 'Max Age Clean': 21.0},
-            {'Name': 'Italian Risorgimento Leaders', 'Median Age': 52.5, 'Average Age': 51.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Turin, Italy', 'Year': 1861, 'Min Age Clean': 41.0, 'Max Age Clean': 56.0},
-            {'Name': 'Impressionists (First Exhibition)', 'Median Age': 35.0, 'Average Age': 36.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1874, 'Min Age Clean': 33.0, 'Max Age Clean': 40.0},
-            {'Name': 'Fabian Society', 'Median Age': 27.5, 'Average Age': 27.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1884, 'Min Age Clean': 25.0, 'Max Age Clean': 28.0},
-            {'Name': 'Theosophical Society (Inner Group, ~1888)', 'Median Age': 37.0, 'Average Age': 39.0, 'Members': 5, 'Category': 'Religion / Philosophy', 'Place': 'London, UK', 'Year': 1888, 'Min Age Clean': null, 'Max Age Clean': 57.0},
-            {'Name': 'Die Brücke (The Bridge) Artists', 'Median Age': 23.5, 'Average Age': 23.5, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Dresden, Germany', 'Year': 1905, 'Min Age Clean': 21.0, 'Max Age Clean': 25.0},
-            {'Name': 'Sinn Féin Founders (1905)', 'Median Age': 35.5, 'Average Age': 35.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1905, 'Min Age Clean': 22.0, 'Max Age Clean': 46.0},
-            {'Name': 'Bloomsbury Group (Formative Period)', 'Median Age': 26.0, 'Average Age': 28.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1907, 'Min Age Clean': 22.0, 'Max Age Clean': 41.0},
-            {'Name': 'NAACP Founders', 'Median Age': 39.0, 'Average Age': 39.0, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1909, 'Min Age Clean': 30.0, 'Max Age Clean': 64.0},
-            {'Name': 'Italian Futurists', 'Median Age': 28.0, 'Average Age': 30.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Milan, Italy', 'Year': 1909, 'Min Age Clean': 24.0, 'Max Age Clean': 38.0},
-            {'Name': 'Der Blaue Reiter (The Blue Rider)', 'Median Age': 34.0, 'Average Age': 37.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Munich, Germany', 'Year': 1911, 'Min Age Clean': 31.0, 'Max Age Clean': 45.0},
-            {'Name': 'African National Congress (ANC) Founders', 'Median Age': 38.5, 'Average Age': 41.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Bloemfontein, South Africa', 'Year': 1912, 'Min Age Clean': 31.0, 'Max Age Clean': 54.0},
-            {'Name': 'Analytical Psychology Founders (Jung Circle)', 'Median Age': 31.0, 'Average Age': 31.0, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Zurich, Switzerland', 'Year': 1913, 'Min Age Clean': 25.0, 'Max Age Clean': 38.0},
-            {'Name': 'IRB Military Council (1916 Rising Planners)', 'Median Age': 36.0, 'Average Age': 39.0, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1915, 'Min Age Clean': 28.0, 'Max Age Clean': 57.0},
-            {'Name': 'Zurich Dadaists', 'Median Age': 27.0, 'Average Age': 26.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Zurich, Switzerland', 'Year': 1916, 'Min Age Clean': 20.0, 'Max Age Clean': 31.0},
-            {'Name': 'De Stijl Artists/Architects', 'Median Age': 34.0, 'Average Age': 36.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Leiden, Netherlands', 'Year': 1917, 'Min Age Clean': 27.0, 'Max Age Clean': 45.0},
-            {'Name': 'Leaders of the Russian Revolution', 'Median Age': 34.0, 'Average Age': 36.0, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Petrograd, Russia', 'Year': 1917, 'Min Age Clean': 29.0, 'Max Age Clean': 47.0},
-            {'Name': 'United Artists Founders', 'Median Age': 39.5, 'Average Age': 40.0, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Hollywood, CA, USA', 'Year': 1919, 'Min Age Clean': 26.0, 'Max Age Clean': 44.0},
-            {'Name': 'Group of Seven (Canadian Painters)', 'Median Age': 35.0, 'Average Age': 37.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Toronto, Canada', 'Year': 1920, 'Min Age Clean': 30.0, 'Max Age Clean': 47.0},
-            {'Name': 'Les Six (French Composers)', 'Median Age': 28.0, 'Average Age': 26.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1920, 'Min Age Clean': 21.0, 'Max Age Clean': 32.0},
-            {'Name': 'Nazi Party (NSDAP) Early Leadership', 'Median Age': 28.0, 'Average Age': 30.0, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Munich, Germany', 'Year': 1921, 'Min Age Clean': 27.0, 'Max Age Clean': 34.0},
-            {'Name': 'Bauhaus Masters (Early Appointments)', 'Median Age': 39.0, 'Average Age': 41.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Weimar, Germany', 'Year': 1922, 'Min Age Clean': 33.0, 'Max Age Clean': 56.0},
-            {'Name': 'Italian Fascist Party (PNF) Leadership', 'Median Age': 39.0, 'Average Age': 40.0, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Rome/Milan, Italy', 'Year': 1922, 'Min Age Clean': 26.0, 'Max Age Clean': 56.0},
-            {'Name': 'Surrealists', 'Median Age': 27.0, 'Average Age': 27.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1924, 'Min Age Clean': 24.0, 'Max Age Clean': 29.0},
-            {'Name': 'Solvay Conference Attendees (1927 Select)', 'Median Age': 42.0, 'Average Age': 45.0, 'Members': 11, 'Category': 'Science & Philosophy', 'Place': 'Brussels, Belgium', 'Year': 1927, 'Min Age Clean': 25.0, 'Max Age Clean': 74.0},
+            {'Name': 'Confucius and Disciples', 'Median Age': 31.0, 'Average Age': 33.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Lu state, China', 'Year': -501, 'Min Age': '~15-19', 'Max Age': '~30s'},
+            {'Name': "Aristotle's Lyceum", 'Median Age': 38.0, 'Average Age': 40.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Athens, Greece', 'Year': -335, 'Min Age': '~18', 'Max Age': '50'},
+            {'Name': 'Christian Apostles (Core Group, Estimated)', 'Median Age': 29.0, 'Average Age': 27.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Galilee, Roman Judea', 'Year': 28, 'Min Age': '~22', 'Max Age': '~29'},
+            {'Name': 'Companions of Muhammad (Select Early)', 'Median Age': 30.0, 'Average Age': 26.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Mecca/Medina, Arabia', 'Year': 610, 'Min Age': '~9', 'Max Age': '~40s'},
+            {'Name': 'Franciscans (Order of Friars Minor, Initial Companions)', 'Median Age': 26.0, 'Average Age': 26.0, 'Members': 12, 'Category': 'Religion', 'Place': 'Assisi, Italy', 'Year': 1209, 'Min Age': '~20s', 'Max Age': '~28'},
+            {'Name': 'Magna Carta Barons (Guarantors Select)', 'Median Age': 56.5, 'Average Age': 55.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Runnymede, UK', 'Year': 1215, 'Min Age': '~40s', 'Max Age': '~60s'},
+            {'Name': 'Jesuits (Society of Jesus)', 'Median Age': 30.0, 'Average Age': 33.0, 'Members': 7, 'Category': 'Religion', 'Place': 'Rome, Italy', 'Year': 1540, 'Min Age': '~25', 'Max Age': '49'},
+            {'Name': 'Royal Society Founders', 'Median Age': 36.5, 'Average Age': 37.0, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'London, UK', 'Year': 1660, 'Min Age': '28', 'Max Age': '~40s'},
+            {'Name': 'Scottish Enlightenment Figures', 'Median Age': 39.0, 'Average Age': 41.0, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Edinburgh/Glasgow, UK', 'Year': 1750, 'Min Age': '27', 'Max Age': '40'},
+            {'Name': 'Lunar Society of Birmingham', 'Median Age': 39.5, 'Average Age': 37.0, 'Members': 10, 'Category': 'Science & Philosophy', 'Place': 'Birmingham, UK', 'Year': 1775, 'Min Age': '22', 'Max Age': '47'},
+            {'Name': 'US Founding Fathers (Signers)', 'Median Age': 45.0, 'Average Age': 44.0, 'Members': 56, 'Category': 'Politics & Activism', 'Place': 'Philadelphia, PA, USA', 'Year': 1776, 'Min Age': '26', 'Max Age': '70'},
+            {'Name': 'Committee of Public Safety (Initial)', 'Median Age': 42.0, 'Average Age': 44.0, 'Members': 9, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1793, 'Min Age': '~30s', 'Max Age': '~40s'},
+            {'Name': 'First Quorum of the Twelve Apostles', 'Median Age': 28.5, 'Average Age': 28.0, 'Members': 12, 'Category': 'Religion', 'Place': 'Kirtland, OH, USA', 'Year': 1835, 'Min Age': '24', 'Max Age': '36'},
+            {'Name': 'Bábí Faith (Letters of the Living Select)', 'Median Age': 26.0, 'Average Age': 27.0, 'Members': 4, 'Category': 'Religion', 'Place': 'Shiraz, Persia', 'Year': 1844, 'Min Age': '~18', 'Max Age': '~30s'},
+            {'Name': 'Pre-Raphaelite Brotherhood', 'Median Age': 21.0, 'Average Age': 21.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1848, 'Min Age': '19', 'Max Age': '21'},
+            {'Name': 'Italian Risorgimento Leaders', 'Median Age': 52.5, 'Average Age': 51.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Turin, Italy', 'Year': 1861, 'Min Age': '41', 'Max Age': '56'},
+            {'Name': 'Impressionists (First Exhibition)', 'Median Age': 35.0, 'Average Age': 36.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1874, 'Min Age': '33', 'Max Age': '40'},
+            {'Name': 'Fabian Society', 'Median Age': 27.5, 'Average Age': 27.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1884, 'Min Age': '25', 'Max Age': '28'},
+            {'Name': 'Theosophical Society (Inner Group, ~1888)', 'Median Age': 37.0, 'Average Age': 39.0, 'Members': 5, 'Category': 'Religion / Philosophy', 'Place': 'London, UK', 'Year': 1888, 'Min Age': null, 'Max Age': '57'},
+            {'Name': 'Die Brücke (The Bridge) Artists', 'Median Age': 23.5, 'Average Age': 23.5, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Dresden, Germany', 'Year': 1905, 'Min Age': '21', 'Max Age': '25'},
+            {'Name': 'Sinn Féin Founders (1905)', 'Median Age': 35.5, 'Average Age': 35.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1905, 'Min Age': '22', 'Max Age': '46'},
+            {'Name': 'Bloomsbury Group (Formative Period)', 'Median Age': 26.0, 'Average Age': 28.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1907, 'Min Age': '22', 'Max Age': '41'},
+            {'Name': 'NAACP Founders', 'Median Age': 39.0, 'Average Age': 39.0, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1909, 'Min Age': '30', 'Max Age': '64'},
+            {'Name': 'Italian Futurists', 'Median Age': 28.0, 'Average Age': 30.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Milan, Italy', 'Year': 1909, 'Min Age': '24', 'Max Age': '38'},
+            {'Name': 'Der Blaue Reiter (The Blue Rider)', 'Median Age': 34.0, 'Average Age': 37.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Munich, Germany', 'Year': 1911, 'Min Age': '31', 'Max Age': '45'},
+            {'Name': 'African National Congress (ANC) Founders', 'Median Age': 38.5, 'Average Age': 41.0, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Bloemfontein, South Africa', 'Year': 1912, 'Min Age': '31', 'Max Age': '54'},
+            {'Name': 'Analytical Psychology Founders (Jung Circle)', 'Median Age': 31.0, 'Average Age': 31.0, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Zurich, Switzerland', 'Year': 1913, 'Min Age': '25', 'Max Age': '38'},
+            {'Name': 'IRB Military Council (1916 Rising Planners)', 'Median Age': 36.0, 'Average Age': 39.0, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1915, 'Min Age': '28', 'Max Age': '57'},
+            {'Name': 'Zurich Dadaists', 'Median Age': 27.0, 'Average Age': 26.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Zurich, Switzerland', 'Year': 1916, 'Min Age': '20', 'Max Age': '31'},
+            {'Name': 'De Stijl Artists/Architects', 'Median Age': 34.0, 'Average Age': 36.0, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Leiden, Netherlands', 'Year': 1917, 'Min Age': '27', 'Max Age': '45'},
+            {'Name': 'Leaders of the Russian Revolution', 'Median Age': 34.0, 'Average Age': 36.0, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Petrograd, Russia', 'Year': 1917, 'Min Age': '29', 'Max Age': '47'},
+            {'Name': 'United Artists Founders', 'Median Age': 39.5, 'Average Age': 40.0, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Hollywood, CA, USA', 'Year': 1919, 'Min Age': '26', 'Max Age': '44'},
+            {'Name': 'Group of Seven (Canadian Painters)', 'Median Age': 35.0, 'Average Age': 37.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Toronto, Canada', 'Year': 1920, 'Min Age': '30', 'Max Age': '47'},
+            {'Name': 'Les Six (French Composers)', 'Median Age': 28.0, 'Average Age': 26.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1920, 'Min Age': '21', 'Max Age': '32'},
+            {'Name': 'Nazi Party (NSDAP) Early Leadership', 'Median Age': 28.0, 'Average Age': 30.0, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Munich, Germany', 'Year': 1921, 'Min Age': '27', 'Max Age': '34'},
+            {'Name': 'Bauhaus Masters (Early Appointments)', 'Median Age': 39.0, 'Average Age': 41.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Weimar, Germany', 'Year': 1922, 'Min Age': '33', 'Max Age': '56'},
+            {'Name': 'Italian Fascist Party (PNF) Leadership', 'Median Age': 39.0, 'Average Age': 40.0, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Rome/Milan, Italy', 'Year': 1922, 'Min Age': '26', 'Max Age': '56'},
+            {'Name': 'Surrealists', 'Median Age': 27.0, 'Average Age': 27.0, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1924, 'Min Age': '24', 'Max Age': '29'},
+            {'Name': 'Solvay Conference Attendees (1927 Select)', 'Median Age': 42.0, 'Average Age': 45.0, 'Members': 11, 'Category': 'Science & Philosophy', 'Place': 'Brussels, Belgium', 'Year': 1927, 'Min Age': '25', 'Max Age': '74'},
             {'Name': 'Muslim Brotherhood (Early Core)', 'Median Age': 22.0, 'Average Age': 23.0, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'Ismailia, Egypt', 'Year': 1928, 'Min Age Clean': 22.0, 'Max Age Clean': 29.0},
             {'Name': 'MoMA Founding Board', 'Median Age': 55.0, 'Average Age': 55.0, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1929, 'Min Age Clean': 51.0, 'Max Age Clean': 65.0},
             {'Name': 'Vienna Circle', 'Median Age': 46.0, 'Average Age': 42.0, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'Vienna, Austria', 'Year': 1929, 'Min Age Clean': 27.0, 'Max Age Clean': 50.0},
@@ -155,7 +150,7 @@
             {'Name': 'Airbnb Founders', 'Median Age': 25.0, 'Average Age': 26.0, 'Members': 3, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2008, 'Min Age Clean': 25.0, 'Max Age Clean': 27.0},
             {'Name': 'WhatsApp Founders', 'Median Age': 35.0, 'Average Age': 35.0, 'Members': 2, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 2009, 'Min Age Clean': 33.0, 'Max Age Clean': 37.0},
             {'Name': 'Instagram Founders', 'Median Age': 25.5, 'Average Age': 26.0, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2010, 'Min Age Clean': 24.0, 'Max Age Clean': 27.0}
-        ] # End of dataset definition
+        ]; // End of dataset definition
 
         // --- Data Cleaning Functions ---
         // (Keep the cleaning functions clean_age_value and parse_min_max_string from previous code)
@@ -205,21 +200,30 @@
             maxAgeClean = (maxAgeClean !== null && !isNaN(maxAgeClean)) ? maxAgeClean : maxAgeParsedFromMin;
             minAgeClean = (minAgeClean !== null && !isNaN(minAgeClean)) ? minAgeClean : minAgeParsedFromMax;
 
+            // Ensure Min <= Max if both exist
             if (minAgeClean !== null && maxAgeClean !== null && minAgeClean > maxAgeClean) {
-                 [minAgeClean, maxAgeClean] = [maxAgeClean, minAgeClean];
+                 if (item['Min Age'] && !item['Max Age'] && String(item['Min Age']).includes('s')) maxAgeClean = minAgeClean + 9; // Adjust max for decade range
+                 else if (item['Max Age'] && !item['Min Age'] && String(item['Max Age']).includes('s')) minAgeClean = maxAgeClean - 9; // Adjust min for decade range
+                 else [minAgeClean, maxAgeClean] = [maxAgeClean, minAgeClean]; // Otherwise swap
             }
+
 
             let ageRangeText = "N/A";
             if (minAgeClean !== null && !isNaN(minAgeClean) && maxAgeClean !== null && !isNaN(maxAgeClean)) {
-                ageRangeText = `${minAgeClean.toFixed(0)}-${maxAgeClean.toFixed(0)}`;
+                if (minAgeClean === maxAgeClean) {
+                    ageRangeText = `${minAgeClean.toFixed(0)}`;
+                } else {
+                    ageRangeText = `${minAgeClean.toFixed(0)}-${maxAgeClean.toFixed(0)}`;
+                }
             } else if (minAgeClean !== null && !isNaN(minAgeClean)) {
                 ageRangeText = `Min: ${minAgeClean.toFixed(0)}`;
             } else if (maxAgeClean !== null && !isNaN(maxAgeClean)) {
                  ageRangeText = `Max: ${maxAgeClean.toFixed(0)}`;
             }
 
+
             return {
-                ...item,
+                ...item, // Keep original data too if needed
                 'Median Age Clean': medianAge,
                 'Average Age Clean': averageAge,
                 'Members Clean': (members !== null && !isNaN(members)) ? parseInt(members) : null,
@@ -244,7 +248,7 @@
 
         // Define colors
         const uniqueCategories = [...new Set(plotDataPoints.map(d => d['Category Clean']))].sort();
-        const colors = Plotly.d3.scale.category10();
+        const colors = Plotly.d3.scale.category10(); // D3 v3 category10 scale used by Plotly
         const colorMap = {};
         uniqueCategories.forEach((cat, i) => {
             colorMap[cat] = colors(i);
@@ -254,7 +258,8 @@
         const shapes = [];
         plotDataPoints.forEach(d => { // Iterate over the points data
             // Only add shape if Min and Max are valid numbers for THIS point
-            if (d['Min Age Clean'] !== null && d['Max Age Clean'] !== null) {
+            // Use !isNaN to check for null or NaN
+            if (!isNaN(d['Min Age Clean']) && !isNaN(d['Max Age Clean'])) {
                 shapes.push({
                     type: 'line',
                     x0: d['Year Clean'],
@@ -265,7 +270,7 @@
                         color: colorMap[d['Category Clean']] || '#CCCCCC',
                         width: 1.5
                     },
-                    opacity: 0.5, // Slightly increased opacity
+                    opacity: 0.5, // Increased opacity
                     layer: 'below'
                 });
             }
@@ -282,25 +287,26 @@
                 size: plotDataPoints.map(d => d['Members Clean']),
                 sizemode: 'area',
                 // Adjust sizeref: find max members, calculate ref based on desired max pixel size (e.g., 50px)
-                sizeref: 2.0 * Math.max(...plotDataPoints.map(d => d['Members Clean'])) / (50**2),
+                // Add check for non-empty array before Math.max
+                sizeref: plotDataPoints.length > 0 ? 2.0 * Math.max(...plotDataPoints.map(d => d['Members Clean'])) / (50**2) : 1,
                 sizemin: 4,
                 opacity: 0.85
             },
-            text: plotDataPoints.map(d => d['Name']),
-            customdata: plotDataPoints.map(d => ({
+            text: plotDataPoints.map(d => d['Name']), // Use Name for hover header
+            customdata: plotDataPoints.map(d => ({ // Data accessible in hovertemplate
                  cat: d['Category Clean'],
                  med: d['Median Age Clean'],
-                 range: d['Age Range Text'],
+                 range: d['Age Range Text'], // Use pre-formatted text
                  mem: d['Members Clean']
             })),
-            hovertemplate:
+            hovertemplate: // Updated hover template to explicitly show Min/Max if available
                 "<b>%{text}</b><br><br>" +
                 "Year: %{x}<br>" +
                 "Category: %{customdata.cat}<br>" +
                 "Avg Age: %{y:.1f}<br>" +
                 "Median Age: %{customdata.med:.1f}<br>" +
-                "Age Range: %{customdata.range}<br>" +
-                "Members: %{customdata.mem}<extra></extra>"
+                "Age Range: %{customdata.range}<br>" + // Shows Min-Max or N/A
+                "Members: %{customdata.mem}<extra></extra>" // <extra></extra> removes trace info
         };
 
         // 3. Define Layout
@@ -319,16 +325,30 @@
             hovermode: 'closest',
             template: 'plotly_white',
             shapes: shapes, // Add the range lines as shapes
-            legend: {
-                title: { text: 'Category' }
-                // Plotly Express usually creates legend based on color automatically
-                // If manual needed: traceorder: 'grouped', groupclick: 'toggleitem'
+            legend: { // Add legend manually based on categories and colors
+                title: { text: 'Category' },
+                traceorder: 'normal'
             },
              margin: { l: 60, r: 50, b: 60, t: 90, pad: 4 } // Adjusted margins
         };
 
-        // 4. Render Plot
-        Plotly.newPlot(chartDiv, [trace], layout);
+        // Create dummy traces for legend
+        const legendTraces = [];
+        uniqueCategories.forEach(cat => {
+            legendTraces.push({
+                x: [null], // No data points
+                y: [null],
+                mode: 'markers',
+                marker: { color: colorMap[cat], size: 10 },
+                name: cat, // Name for legend entry
+                type: 'scatter'
+            });
+        });
+
+
+        // 4. Render Plot (Combine main trace and legend traces)
+        Plotly.newPlot(chartDiv, [trace, ...legendTraces], layout);
+
 
         // Optional: Handle window resize
         window.addEventListener('resize', function() {
@@ -339,197 +359,3 @@
 
 </body>
 </html>
-```
-
-Most up-to-date Immersive Artifact for "bar_chart_105_groups" is:
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
-import re
-
-# Expanded and cleaned dataset based on PDF for 105 groups
-# (Using the same data list as defined in the scatter plot code above)
-data = [
-    {'Name': 'Confucius and Disciples', 'Median Age': 31, 'Average Age': 33, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Lu state, China', 'Year': -501},
-    {'Name': "Aristotle's Lyceum", 'Median Age': 38, 'Average Age': 40, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Athens, Greece', 'Year': -335},
-    {'Name': 'Christian Apostles (Core Group, Estimated)', 'Median Age': 29, 'Average Age': 27, 'Members': 4, 'Category': 'Religion', 'Place': 'Galilee, Roman Judea', 'Year': 28},
-    {'Name': 'Companions of Muhammad (Select Early)', 'Median Age': 30, 'Average Age': 26, 'Members': 4, 'Category': 'Religion', 'Place': 'Mecca/Medina, Arabia', 'Year': 610},
-    {'Name': 'Franciscans (Order of Friars Minor, Initial Companions)', 'Median Age': 26, 'Average Age': 26, 'Members': 12, 'Category': 'Religion', 'Place': 'Assisi, Italy', 'Year': 1209},
-    {'Name': 'Magna Carta Barons (Guarantors Select)', 'Median Age': 56.5, 'Average Age': 55, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Runnymede, UK', 'Year': 1215},
-    {'Name': 'Jesuits (Society of Jesus)', 'Median Age': 30, 'Average Age': 33, 'Members': 7, 'Category': 'Religion', 'Place': 'Rome, Italy', 'Year': 1540},
-    {'Name': 'Royal Society Founders', 'Median Age': 36.5, 'Average Age': 37, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'London, UK', 'Year': 1660},
-    {'Name': 'Scottish Enlightenment Figures', 'Median Age': 39, 'Average Age': 41, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Edinburgh/Glasgow, UK', 'Year': 1750},
-    {'Name': 'Lunar Society of Birmingham', 'Median Age': 39.5, 'Average Age': 37, 'Members': 10, 'Category': 'Science & Philosophy', 'Place': 'Birmingham, UK', 'Year': 1775},
-    {'Name': 'US Founding Fathers (Signers)', 'Median Age': 45, 'Average Age': 44, 'Members': 56, 'Category': 'Politics & Activism', 'Place': 'Philadelphia, PA, USA', 'Year': 1776},
-    {'Name': 'Committee of Public Safety (Initial)', 'Median Age': 42, 'Average Age': 44, 'Members': 9, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1793},
-    {'Name': 'First Quorum of the Twelve Apostles', 'Median Age': 28.5, 'Average Age': 28, 'Members': 12, 'Category': 'Religion', 'Place': 'Kirtland, OH, USA', 'Year': 1835},
-    {'Name': 'Bábí Faith (Letters of the Living Select)', 'Median Age': 26, 'Average Age': 27, 'Members': 4, 'Category': 'Religion', 'Place': 'Shiraz, Persia', 'Year': 1844},
-    {'Name': 'Pre-Raphaelite Brotherhood', 'Median Age': 21, 'Average Age': 21, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1848},
-    {'Name': 'Italian Risorgimento Leaders', 'Median Age': 52.5, 'Average Age': 51, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Turin, Italy', 'Year': 1861},
-    {'Name': 'Impressionists (First Exhibition)', 'Median Age': 35, 'Average Age': 36, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1874},
-    {'Name': 'Fabian Society', 'Median Age': 27.5, 'Average Age': 27, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1884},
-    {'Name': 'Theosophical Society (Inner Group, ~1888)', 'Median Age': 37, 'Average Age': 39, 'Members': 5, 'Category': 'Religion/Philosophy', 'Place': 'London, UK', 'Year': 1888},
-    {'Name': 'Die Brücke (The Bridge) Artists', 'Median Age': 23.5, 'Average Age': 23.5, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Dresden, Germany', 'Year': 1905},
-    {'Name': 'Sinn Féin Founders (1905)', 'Median Age': 35.5, 'Average Age': 35, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1905},
-    {'Name': 'Bloomsbury Group (Formative Period)', 'Median Age': 26, 'Average Age': 28, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1907},
-    {'Name': 'NAACP Founders', 'Median Age': 39, 'Average Age': 39, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1909},
-    {'Name': 'Italian Futurists', 'Median Age': 28, 'Average Age': 30, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Milan, Italy', 'Year': 1909},
-    {'Name': 'Der Blaue Reiter (The Blue Rider)', 'Median Age': 34, 'Average Age': 37, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Munich, Germany', 'Year': 1911},
-    {'Name': 'African National Congress (ANC) Founders', 'Median Age': 38.5, 'Average Age': 41, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Bloemfontein, South Africa', 'Year': 1912},
-    {'Name': 'Analytical Psychology Founders (Jung Circle)', 'Median Age': 31, 'Average Age': 31, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Zurich, Switzerland', 'Year': 1913},
-    {'Name': 'IRB Military Council (1916 Rising Planners)', 'Median Age': 36, 'Average Age': 39, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1915},
-    {'Name': 'Zurich Dadaists', 'Median Age': 27, 'Average Age': 26, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Zurich, Switzerland', 'Year': 1916},
-    {'Name': 'De Stijl Artists/Architects', 'Median Age': 34, 'Average Age': 36, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Leiden, Netherlands', 'Year': 1917},
-    {'Name': 'Leaders of the Russian Revolution', 'Median Age': 34, 'Average Age': 36, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Petrograd, Russia', 'Year': 1917},
-    {'Name': 'United Artists Founders', 'Median Age': 39.5, 'Average Age': 40, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Hollywood, CA, USA', 'Year': 1919},
-    {'Name': 'Group of Seven (Canadian Painters)', 'Median Age': 35, 'Average Age': 37, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Toronto, Canada', 'Year': 1920},
-    {'Name': 'Les Six (French Composers)', 'Median Age': 28, 'Average Age': 26, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1920},
-    {'Name': 'Nazi Party (NSDAP) Early Leadership', 'Median Age': 28, 'Average Age': 30, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Munich, Germany', 'Year': 1921},
-    {'Name': 'Bauhaus Masters (Early Appointments)', 'Median Age': 39, 'Average Age': 41, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Weimar, Germany', 'Year': 1922},
-    {'Name': 'Italian Fascist Party (PNF) Leadership', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Rome/Milan, Italy', 'Year': 1922},
-    {'Name': 'Surrealists', 'Median Age': 27, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1924},
-    {'Name': 'Solvay Conference Attendees (1927 Select)', 'Median Age': 42, 'Average Age': 45, 'Members': 11, 'Category': 'Science & Philosophy', 'Place': 'Brussels, Belgium', 'Year': 1927},
-    {'Name': 'Muslim Brotherhood (Early Core)', 'Median Age': 22, 'Average Age': 23, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'Ismailia, Egypt', 'Year': 1928},
-    {'Name': 'MoMA Founding Board', 'Median Age': 55, 'Average Age': 55, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1929},
-    {'Name': 'Vienna Circle', 'Median Age': 46, 'Average Age': 42, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'Vienna, Austria', 'Year': 1929},
-    {'Name': 'Frankfurt School (Inner Circle)', 'Median Age': 33, 'Average Age': 33, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Frankfurt, Germany', 'Year': 1931},
-    {'Name': 'Group Theatre (NYC, Founding Members)', 'Median Age': 29, 'Average Age': 30, 'Members': 10, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1931},
-    {'Name': 'Partisan Review Founders (Relaunch)', 'Median Age': 30, 'Average Age': 30, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1937},
-    {'Name': 'Oxfam Founders (Oxford Committee for Famine Relief)', 'Median Age': 48, 'Average Age': 49, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Oxford, UK', 'Year': 1942},
-    {'Name': 'Manhattan Project Leadership (Select)', 'Median Age': 44.5, 'Average Age': 45, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'Los Alamos/Various, USA', 'Year': 1943},
-    {'Name': 'Abstract Expressionists (NY School, Core)', 'Median Age': 38, 'Average Age': 39, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1945},
-    {'Name': 'Actors Studio Founders', 'Median Age': 33, 'Average Age': 33, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1947},
-    {'Name': 'Indian Independence Leadership (INC Core)', 'Median Age': 58, 'Average Age': 59, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'New Delhi, India', 'Year': 1947},
-    {'Name': 'Key Figures in Founding State of Israel', 'Median Age': 54, 'Average Age': 59, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Tel Aviv, Israel', 'Year': 1948},
-    {'Name': 'COBRA Artists', 'Median Age': 26.5, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1948},
-    {'Name': 'DNA Structure Discovery Key Figures', 'Median Age': 35, 'Average Age': 33, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Cambridge/London, UK', 'Year': 1953},
-    {'Name': 'Team 10 (Architects)', 'Median Age': 35, 'Average Age': 34, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Doorn, Netherlands', 'Year': 1954},
-    {'Name': 'Beat Generation Writers (Core)', 'Median Age': 31, 'Average Age': 32, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'NYC/San Francisco, USA', 'Year': 1955},
-    {'Name': 'Situationist International Founders', 'Median Age': 37, 'Average Age': 37, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': "Cosio d'Arroscia, Italy", 'Year': 1957},
-    {'Name': 'Traitorous Eight (Fairchild Semi.)', 'Median Age': 31.5, 'Average Age': 31, 'Members': 8, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1957},
-    {'Name': 'ETA Founders', 'Median Age': 26, 'Average Age': 27, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Basque Country, Spain', 'Year': 1959},
-    {'Name': 'Oulipo (Potential Literature Workshop)', 'Median Age': 48, 'Average Age': 45, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1960},
-    {'Name': 'SNCC Founding Members (Student Nonviolent Coordinating Committee)', 'Median Age': 21, 'Average Age': 21, 'Members': 10, 'Category': 'Politics & Activism', 'Place': 'Raleigh, NC, USA', 'Year': 1960},
-    {'Name': 'Amnesty International Founders', 'Median Age': 40.5, 'Average Age': 43, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1961},
-    {'Name': 'Archigram (Architectural Group)', 'Median Age': 27, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1961},
-    {'Name': 'Fluxus (Early Core Group)', 'Median Age': 30, 'Average Age': 31, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Wiesbaden/NYC/Global', 'Year': 1962},
-    {'Name': 'PLO Founding Executive Committee', 'Median Age': 33, 'Average Age': 38, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Jerusalem/Cairo', 'Year': 1964},
-    {'Name': 'The Beatles (US Beatlemania Start)', 'Median Age': 23, 'Average Age': 23, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK / USA', 'Year': 1964},
-    {'Name': 'Grateful Dead (as Warlocks)', 'Median Age': 20, 'Average Age': 21, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Palo Alto, CA, USA', 'Year': 1965},
-    {'Name': 'Black Panther Party (Early Leaders)', 'Median Age': 24, 'Average Age': 26, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Oakland, CA, USA', 'Year': 1966},
-    {'Name': 'The Velvet Underground (Debut Album)', 'Median Age': 25, 'Average Age': 25, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1967},
-    {'Name': 'Intel Founders', 'Median Age': 35.5, 'Average Age': 36, 'Members': 4, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1968},
-    {'Name': 'Led Zeppelin', 'Median Age': 21, 'Average Age': 22, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1968},
-    {'Name': 'Stonewall/Early GLF Figures', 'Median Age': 24, 'Average Age': 24, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1969},
-    {'Name': 'Red Brigades (Brigate Rosse)', 'Median Age': 24, 'Average Age': 24, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Milan, Italy', 'Year': 1970},
-    {'Name': 'Queen (Classic Lineup Solidified)', 'Median Age': 24, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1971},
-    {'Name': 'Greenpeace Founders (Initial Voyage Core)', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Vancouver, Canada', 'Year': 1971},
-    {'Name': 'Médecins Sans Frontières (MSF) Founders', 'Median Age': 30.5, 'Average Age': 31, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1971},
-    {'Name': 'SAP Founders', 'Median Age': 32, 'Average Age': 32, 'Members': 5, 'Category': 'Technology', 'Place': 'Weinheim, Germany', 'Year': 1972},
-    {'Name': 'The Ramones', 'Median Age': 24, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1974},
-    {'Name': 'Khmer Rouge Leadership', 'Median Age': 49, 'Average Age': 48, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Phnom Penh, Cambodia', 'Year': 1975},
-    {'Name': 'Sex Pistols', 'Median Age': 19, 'Average Age': 19, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1975},
-    {'Name': 'Microsoft Founders', 'Median Age': 21, 'Average Age': 21, 'Members': 2, 'Category': 'Technology', 'Place': 'Albuquerque, NM, USA', 'Year': 1975},
-    {'Name': 'Apple Founders', 'Median Age': 26, 'Average Age': 30, 'Members': 3, 'Category': 'Technology', 'Place': 'Cupertino, CA, USA', 'Year': 1976},
-    {'Name': 'The Clash', 'Median Age': 21, 'Average Age': 22, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1976},
-    {'Name': 'Oracle Corporation Founders', 'Median Age': 33, 'Average Age': 34, 'Members': 3, 'Category': 'Technology', 'Place': 'Santa Clara, CA, USA', 'Year': 1977},
-    {'Name': 'Solidarity (Solidarność) Key Figures', 'Median Age': 35, 'Average Age': 36, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Gdańsk, Poland', 'Year': 1980},
-    {'Name': 'Public Enemy', 'Median Age': 25, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Long Island, NY, USA', 'Year': 1985},
-    {'Name': 'Pixar (Early Leadership Team)', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Emeryville, CA, USA', 'Year': 1986},
-    {'Name': 'NWA (Niggaz Wit Attitudes) Core Members', 'Median Age': 21, 'Average Age': 21, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Compton, CA, USA', 'Year': 1987},
-    {'Name': 'Hamas Founders', 'Median Age': 41, 'Average Age': 39, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Gaza', 'Year': 1987},
-    {'Name': 'Young British Artists (YBAs, Freeze exhibit)', 'Median Age': 23, 'Average Age': 23, 'Members': 16, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1988},
-    {'Name': 'Nirvana (Nevermind Lineup)', 'Median Age': 23, 'Average Age': 23, 'Members': 3, 'Category': 'Arts & Culture', 'Place': 'Seattle, WA, USA', 'Year': 1991},
-    {'Name': 'Wu-Tang Clan', 'Median Age': 22, 'Average Age': 23, 'Members': 9, 'Category': 'Arts & Culture', 'Place': 'Staten Island, NYC, USA', 'Year': 1992},
-    {'Name': 'Netscape Founders (Early Team)', 'Median Age': 29, 'Average Age': 30, 'Members': 6, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1994},
-    {'Name': 'Amazon Founder', 'Median Age': 30, 'Average Age': 30, 'Members': 1, 'Category': 'Technology', 'Place': 'Seattle, WA, USA', 'Year': 1994},
-    {'Name': 'Dogme 95 Filmmakers', 'Median Age': 38.5, 'Average Age': 38, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Copenhagen, Denmark', 'Year': 1995},
-    {'Name': 'eBay Founder', 'Median Age': 28, 'Average Age': 28, 'Members': 1, 'Category': 'Technology', 'Place': 'San Jose, CA, USA', 'Year': 1995},
-    {'Name': 'Google Founders', 'Median Age': 25, 'Average Age': 25, 'Members': 2, 'Category': 'Technology', 'Place': 'Menlo Park, CA, USA', 'Year': 1998},
-    {'Name': 'Alibaba Founders (Core Group)', 'Median Age': 30.5, 'Average Age': 30, 'Members': 4, 'Category': 'Technology', 'Place': 'Hangzhou, China', 'Year': 1999},
-    {'Name': 'PayPal Mafia (Core Group)', 'Median Age': 28, 'Average Age': 28, 'Members': 7, 'Category': 'Technology', 'Place': 'Palo Alto, CA, USA', 'Year': 2000},
-    {'Name': 'Wikipedia Founders', 'Median Age': 33.5, 'Average Age': 34, 'Members': 2, 'Category': 'Technology', 'Place': 'Internet', 'Year': 2001},
-    {'Name': 'Facebook Founders', 'Median Age': 20.5, 'Average Age': 21, 'Members': 4, 'Category': 'Technology', 'Place': 'Cambridge, MA, USA', 'Year': 2004},
-    {'Name': 'Reddit Founders', 'Median Age': 20, 'Average Age': 21, 'Members': 3, 'Category': 'Technology', 'Place': 'Medford, MA, USA', 'Year': 2005},
-    {'Name': 'Twitter Founders', 'Median Age': 31, 'Average Age': 29, 'Members': 4, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2006},
-    {'Name': 'Spotify Founders', 'Median Age': 29.5, 'Average Age': 30, 'Members': 2, 'Category': 'Technology', 'Place': 'Stockholm, Sweden', 'Year': 2006},
-    {'Name': 'Dropbox Founders', 'Median Age': 23, 'Average Age': 23, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2007},
-    {'Name': 'Airbnb Founders', 'Median Age': 25, 'Average Age': 26, 'Members': 3, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2008},
-    {'Name': 'WhatsApp Founders', 'Median Age': 35, 'Average Age': 35, 'Members': 2, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 2009},
-    {'Name': 'Instagram Founders', 'Median Age': 25.5, 'Average Age': 26, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2010}
-]
-
-
-# Create DataFrame
-df = pd.DataFrame(data)
-
-# --- Bar Chart Code ---
-# Clean data types
-df['Median Age'] = pd.to_numeric(df['Median Age'], errors='coerce')
-df['Average Age'] = pd.to_numeric(df['Average Age'], errors='coerce')
-df['Members'] = pd.to_numeric(df['Members'], errors='coerce')
-df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
-df['Category'] = df['Category'].astype(str).str.replace('/', ' / ') # Ensure category is string and format
-
-# Drop rows where essential plotting data might be missing after coercion
-df.dropna(subset=['Median Age', 'Category', 'Name', 'Year'], inplace=True)
-
-
-# Create a combined label for the y-axis
-df['Group Label'] = df['Name'] + ' (' + df['Year'].astype(int).astype(str) + ')' # Use int for year display
-
-# Sort data for plotting: primarily by Median Age
-df_sorted = df.sort_values(by='Median Age', ascending=True).reset_index(drop=True) # Reset index after sorting
-
-# Set plot style
-sns.set_style("whitegrid")
-
-# Define a high-contrast color palette
-palette = "tab10"
-
-# Create the horizontal bar chart
-# Increase figure height significantly to accommodate 100+ bars
-plt.figure(figsize=(12, 40)) # Further increased height
-
-bar_plot = sns.barplot(
-    x='Median Age',
-    y='Group Label', # Use combined label
-    data=df_sorted,
-    hue='Category', # Color bars by Category
-    palette=palette, # Use high-contrast palette
-    dodge=False, # Don't dodge bars as they are on separate lines
-    orient='h'
-)
-
-# Add titles and labels
-plt.title('Median Founding Age by Group (Ranked by Age, 105 Groups)', fontsize=16)
-plt.xlabel('Median Age of Founders', fontsize=12)
-plt.ylabel('Group (Founding Year)', fontsize=12) # Changed label
-plt.xticks(fontsize=10)
-plt.yticks(fontsize=8) # Make y-tick font size smaller
-
-# Add the value labels on the bars
-for index, row in df_sorted.iterrows():
-   value = row['Median Age']
-   if pd.notna(value): # Check if value is not NaN
-       # Use formatting to show one decimal place for non-integer ages
-       label_text = f'{value:.1f}' if value != int(value) else f'{int(value)}'
-       # Place text slightly after the bar end
-       plt.text(value + 0.3, index, label_text, va='center', fontsize=7) # Smaller font size for labels
-
-# Improve legend
-# Get handles and labels
-handles, labels = bar_plot.get_legend_handles_labels()
-# Create a unique legend (remove duplicate category labels)
-by_label = dict(zip(labels, handles))
-plt.legend(by_label.values(), by_label.keys(), title='Category', bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
-
-
-# Adjust layout
-plt.tight_layout(rect=[0, 0, 0.85, 1]) # Adjust layout to make space for legend
-
-# Show the plot
-plt.show()

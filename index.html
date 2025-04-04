@@ -18,18 +18,23 @@
         }
         #plotlyChart {
             width: 95%;
-            /* Increased height for better visibility with many points */
-            height: 85vh;
+            height: 85vh; /* Adjust height as needed */
             margin: 20px auto;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        /* Tooltip styling if needed */
+        /* Tooltip styling */
         .plotly-tooltip {
             border-radius: 4px !important;
             font-size: 12px !important;
+            background-color: rgba(68, 68, 68, 0.9) !important;
+            color: white !important;
         }
+        .hovertext text { /* Attempt to style hover text if needed */
+            fill: white !important;
+        }
+
     </style>
 </head>
 <body>
@@ -41,7 +46,7 @@
         // --- Data Definition ---
         // Expanded and cleaned dataset for 105 groups
         const dataset = [
-            // Ensure data includes: Name, Year, Average Age, Median Age, Members, Category, Min Age Clean, Max Age Clean
+             // Ensure data includes: Name, Year, Average Age, Median Age, Members, Category, Min Age Clean, Max Age Clean
             // Using cleaned numeric values where possible. null indicates missing data.
             {'Name': 'Confucius and Disciples', 'Median Age': 31.0, 'Average Age': 33.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Lu state, China', 'Year': -501, 'Min Age Clean': 15.0, 'Max Age Clean': 30.0},
             {'Name': "Aristotle's Lyceum", 'Median Age': 38.0, 'Average Age': 40.0, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Athens, Greece', 'Year': -335, 'Min Age Clean': 18.0, 'Max Age Clean': 50.0},
@@ -150,74 +155,60 @@
             {'Name': 'Airbnb Founders', 'Median Age': 25.0, 'Average Age': 26.0, 'Members': 3, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2008, 'Min Age Clean': 25.0, 'Max Age Clean': 27.0},
             {'Name': 'WhatsApp Founders', 'Median Age': 35.0, 'Average Age': 35.0, 'Members': 2, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 2009, 'Min Age Clean': 33.0, 'Max Age Clean': 37.0},
             {'Name': 'Instagram Founders', 'Median Age': 25.5, 'Average Age': 26.0, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2010, 'Min Age Clean': 24.0, 'Max Age Clean': 27.0}
-        ];
+        ] # End of dataset definition
 
         // --- Data Cleaning Functions ---
         // (Keep the cleaning functions clean_age_value and parse_min_max_string from previous code)
-         function clean_age_value(age_val) {
+        function clean_age_value(age_val) {
             if (age_val === null || age_val === undefined) return null;
             let s = String(age_val).replace(/~/g, '').trim();
-             // Handle simple numbers first
             let numMatch = s.match(/^\d+(\.\d+)?$/);
             if (numMatch) return parseFloat(numMatch[0]);
-             // Handle 'X0s' -> X0
             let decadeMatch = s.match(/^(\d+)s$/);
             if (decadeMatch) return parseFloat(decadeMatch[1]);
-             // Handle ranges like '15-19' -> return null for single value cleaning
-             // Handle other non-numeric -> return null
             return null;
         }
 
         function parse_min_max_string(age_str) {
             if (age_str === null || age_str === undefined || age_str === '') return [null, null];
             let s = String(age_str).replace(/~/g, '').trim();
-             // Case 1: Range like '15-19' or '20s-30s' or '20s/30s'
             let range_match = s.match(/^(\d+)(s)?\s*[-/]\s*(\d+)(s)?$/);
             if (range_match) {
                 let min_val = parseFloat(range_match[1]);
                 let max_val = parseFloat(range_match[3]);
-                 // Adjust max if it was a decade end (e.g., '20s-30s' -> 20, 30+9)
                 if (range_match[4] === 's') max_val += 9;
                 return [min_val, max_val];
             }
-             // Case 2: Decade like '20s' -> range 20-29
             let decade_match = s.match(/^(\d+)s$/);
             if (decade_match) {
                 let val = parseFloat(decade_match[1]);
                 return [val, val + 9];
             }
-             // Case 3: Simple number -> Min = Max = Value
             try {
                 let val = parseFloat(s);
                 if (!isNaN(val)) return [val, val];
-            } catch (e) {
-                // Ignore error, fall through
-            }
-            return [null, null]; // Cannot parse
+            } catch (e) {}
+            return [null, null];
         }
 
         // --- Process Data ---
         let processedData = dataset.map(item => {
             let medianAge = clean_age_value(item['Median Age']);
             let averageAge = clean_age_value(item['Average Age']);
-            let members = clean_age_value(item['Members']); // Use same cleaning
+            let members = clean_age_value(item['Members']);
             let year = typeof item['Year'] === 'number' ? item['Year'] : null;
-            let category = String(item['Category'] || 'Unknown').replace('Religion/Philosophy', 'Science & Philosophy').replace('/', ' / '); // Clean category
+            let category = String(item['Category'] || 'Unknown').replace('Religion/Philosophy', 'Science & Philosophy').replace('/', ' / ');
 
             let [minAgeClean, maxAgeParsedFromMin] = parse_min_max_string(item['Min Age']);
             let [minAgeParsedFromMax, maxAgeClean] = parse_min_max_string(item['Max Age']);
 
-            // Combine results - prioritize specific columns, then use range parts if needed
             maxAgeClean = (maxAgeClean !== null && !isNaN(maxAgeClean)) ? maxAgeClean : maxAgeParsedFromMin;
             minAgeClean = (minAgeClean !== null && !isNaN(minAgeClean)) ? minAgeClean : minAgeParsedFromMax;
 
-            // Ensure Min <= Max if both exist
             if (minAgeClean !== null && maxAgeClean !== null && minAgeClean > maxAgeClean) {
-                 // Swap if min > max (can happen with decade parsing like '20s')
                  [minAgeClean, maxAgeClean] = [maxAgeClean, minAgeClean];
             }
 
-             // Format Age Range Text for hover
             let ageRangeText = "N/A";
             if (minAgeClean !== null && !isNaN(minAgeClean) && maxAgeClean !== null && !isNaN(maxAgeClean)) {
                 ageRangeText = `${minAgeClean.toFixed(0)}-${maxAgeClean.toFixed(0)}`;
@@ -227,9 +218,8 @@
                  ageRangeText = `Max: ${maxAgeClean.toFixed(0)}`;
             }
 
-
             return {
-                ...item, // Keep original data too if needed
+                ...item,
                 'Median Age Clean': medianAge,
                 'Average Age Clean': averageAge,
                 'Members Clean': (members !== null && !isNaN(members)) ? parseInt(members) : null,
@@ -252,9 +242,9 @@
         // --- Plotting ---
         const chartDiv = document.getElementById('plotlyChart');
 
-        // Define colors - using Plotly's default qualitative sequence
+        // Define colors
         const uniqueCategories = [...new Set(plotDataPoints.map(d => d['Category Clean']))].sort();
-        const colors = Plotly.d3.scale.category10(); // D3 v3 category10 scale used by Plotly
+        const colors = Plotly.d3.scale.category10();
         const colorMap = {};
         uniqueCategories.forEach((cat, i) => {
             colorMap[cat] = colors(i);
@@ -262,8 +252,8 @@
 
         // 1. Prepare Shapes for Range Lines
         const shapes = [];
-        plotDataPoints.forEach(d => {
-            // Only add shape if Min and Max are valid numbers
+        plotDataPoints.forEach(d => { // Iterate over the points data
+            // Only add shape if Min and Max are valid numbers for THIS point
             if (d['Min Age Clean'] !== null && d['Max Age Clean'] !== null) {
                 shapes.push({
                     type: 'line',
@@ -272,10 +262,10 @@
                     y0: d['Min Age Clean'],
                     y1: d['Max Age Clean'],
                     line: {
-                        color: colorMap[d['Category Clean']] || '#CCCCCC', // Fallback color
+                        color: colorMap[d['Category Clean']] || '#CCCCCC',
                         width: 1.5
                     },
-                    opacity: 0.4,
+                    opacity: 0.5, // Slightly increased opacity
                     layer: 'below'
                 });
             }
@@ -288,17 +278,16 @@
             mode: 'markers',
             type: 'scatter',
             marker: {
-                // Map category to color
                 color: plotDataPoints.map(d => colorMap[d['Category Clean']] || '#CCCCCC'),
-                // Map members to size
                 size: plotDataPoints.map(d => d['Members Clean']),
-                sizemode: 'area', // Makes size proportional to area
-                sizeref: 2.0 * Math.max(...plotDataPoints.map(d => d['Members Clean'])) / (60**2), // Adjust sizeref based on max members and desired max size (e.g., 60px)
-                sizemin: 4, // Minimum marker size
+                sizemode: 'area',
+                // Adjust sizeref: find max members, calculate ref based on desired max pixel size (e.g., 50px)
+                sizeref: 2.0 * Math.max(...plotDataPoints.map(d => d['Members Clean'])) / (50**2),
+                sizemin: 4,
                 opacity: 0.85
             },
-            text: plotDataPoints.map(d => d['Name']), // Text displayed on hover header
-            customdata: plotDataPoints.map(d => ({ // Data accessible in hovertemplate
+            text: plotDataPoints.map(d => d['Name']),
+            customdata: plotDataPoints.map(d => ({
                  cat: d['Category Clean'],
                  med: d['Median Age Clean'],
                  range: d['Age Range Text'],
@@ -311,7 +300,7 @@
                 "Avg Age: %{y:.1f}<br>" +
                 "Median Age: %{customdata.med:.1f}<br>" +
                 "Age Range: %{customdata.range}<br>" +
-                "Members: %{customdata.mem}<extra></extra>" // <extra></extra> removes trace info
+                "Members: %{customdata.mem}<extra></extra>"
         };
 
         // 3. Define Layout
@@ -319,7 +308,7 @@
             title: 'Interactive Plot: Founder Average Age vs. Year (with Min-Max Range)',
             xaxis: {
                 title: 'Founding Year',
-                gridcolor: '#eef', // Lighter grid lines
+                gridcolor: '#eef',
                 zeroline: false
             },
             yaxis: {
@@ -330,10 +319,12 @@
             hovermode: 'closest',
             template: 'plotly_white',
             shapes: shapes, // Add the range lines as shapes
-            legend: { // Add legend manually if needed, Plotly usually handles color legends well
+            legend: {
                 title: { text: 'Category' }
+                // Plotly Express usually creates legend based on color automatically
+                // If manual needed: traceorder: 'grouped', groupclick: 'toggleitem'
             },
-             margin: { l: 50, r: 50, b: 50, t: 80, pad: 4 } // Adjust margins
+             margin: { l: 60, r: 50, b: 60, t: 90, pad: 4 } // Adjusted margins
         };
 
         // 4. Render Plot
@@ -348,3 +339,197 @@
 
 </body>
 </html>
+```
+
+Most up-to-date Immersive Artifact for "bar_chart_105_groups" is:
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import re
+
+# Expanded and cleaned dataset based on PDF for 105 groups
+# (Using the same data list as defined in the scatter plot code above)
+data = [
+    {'Name': 'Confucius and Disciples', 'Median Age': 31, 'Average Age': 33, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Lu state, China', 'Year': -501},
+    {'Name': "Aristotle's Lyceum", 'Median Age': 38, 'Average Age': 40, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Athens, Greece', 'Year': -335},
+    {'Name': 'Christian Apostles (Core Group, Estimated)', 'Median Age': 29, 'Average Age': 27, 'Members': 4, 'Category': 'Religion', 'Place': 'Galilee, Roman Judea', 'Year': 28},
+    {'Name': 'Companions of Muhammad (Select Early)', 'Median Age': 30, 'Average Age': 26, 'Members': 4, 'Category': 'Religion', 'Place': 'Mecca/Medina, Arabia', 'Year': 610},
+    {'Name': 'Franciscans (Order of Friars Minor, Initial Companions)', 'Median Age': 26, 'Average Age': 26, 'Members': 12, 'Category': 'Religion', 'Place': 'Assisi, Italy', 'Year': 1209},
+    {'Name': 'Magna Carta Barons (Guarantors Select)', 'Median Age': 56.5, 'Average Age': 55, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Runnymede, UK', 'Year': 1215},
+    {'Name': 'Jesuits (Society of Jesus)', 'Median Age': 30, 'Average Age': 33, 'Members': 7, 'Category': 'Religion', 'Place': 'Rome, Italy', 'Year': 1540},
+    {'Name': 'Royal Society Founders', 'Median Age': 36.5, 'Average Age': 37, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'London, UK', 'Year': 1660},
+    {'Name': 'Scottish Enlightenment Figures', 'Median Age': 39, 'Average Age': 41, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Edinburgh/Glasgow, UK', 'Year': 1750},
+    {'Name': 'Lunar Society of Birmingham', 'Median Age': 39.5, 'Average Age': 37, 'Members': 10, 'Category': 'Science & Philosophy', 'Place': 'Birmingham, UK', 'Year': 1775},
+    {'Name': 'US Founding Fathers (Signers)', 'Median Age': 45, 'Average Age': 44, 'Members': 56, 'Category': 'Politics & Activism', 'Place': 'Philadelphia, PA, USA', 'Year': 1776},
+    {'Name': 'Committee of Public Safety (Initial)', 'Median Age': 42, 'Average Age': 44, 'Members': 9, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1793},
+    {'Name': 'First Quorum of the Twelve Apostles', 'Median Age': 28.5, 'Average Age': 28, 'Members': 12, 'Category': 'Religion', 'Place': 'Kirtland, OH, USA', 'Year': 1835},
+    {'Name': 'Bábí Faith (Letters of the Living Select)', 'Median Age': 26, 'Average Age': 27, 'Members': 4, 'Category': 'Religion', 'Place': 'Shiraz, Persia', 'Year': 1844},
+    {'Name': 'Pre-Raphaelite Brotherhood', 'Median Age': 21, 'Average Age': 21, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1848},
+    {'Name': 'Italian Risorgimento Leaders', 'Median Age': 52.5, 'Average Age': 51, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Turin, Italy', 'Year': 1861},
+    {'Name': 'Impressionists (First Exhibition)', 'Median Age': 35, 'Average Age': 36, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1874},
+    {'Name': 'Fabian Society', 'Median Age': 27.5, 'Average Age': 27, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1884},
+    {'Name': 'Theosophical Society (Inner Group, ~1888)', 'Median Age': 37, 'Average Age': 39, 'Members': 5, 'Category': 'Religion/Philosophy', 'Place': 'London, UK', 'Year': 1888},
+    {'Name': 'Die Brücke (The Bridge) Artists', 'Median Age': 23.5, 'Average Age': 23.5, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Dresden, Germany', 'Year': 1905},
+    {'Name': 'Sinn Féin Founders (1905)', 'Median Age': 35.5, 'Average Age': 35, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1905},
+    {'Name': 'Bloomsbury Group (Formative Period)', 'Median Age': 26, 'Average Age': 28, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1907},
+    {'Name': 'NAACP Founders', 'Median Age': 39, 'Average Age': 39, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1909},
+    {'Name': 'Italian Futurists', 'Median Age': 28, 'Average Age': 30, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Milan, Italy', 'Year': 1909},
+    {'Name': 'Der Blaue Reiter (The Blue Rider)', 'Median Age': 34, 'Average Age': 37, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Munich, Germany', 'Year': 1911},
+    {'Name': 'African National Congress (ANC) Founders', 'Median Age': 38.5, 'Average Age': 41, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Bloemfontein, South Africa', 'Year': 1912},
+    {'Name': 'Analytical Psychology Founders (Jung Circle)', 'Median Age': 31, 'Average Age': 31, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Zurich, Switzerland', 'Year': 1913},
+    {'Name': 'IRB Military Council (1916 Rising Planners)', 'Median Age': 36, 'Average Age': 39, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Dublin, Ireland', 'Year': 1915},
+    {'Name': 'Zurich Dadaists', 'Median Age': 27, 'Average Age': 26, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Zurich, Switzerland', 'Year': 1916},
+    {'Name': 'De Stijl Artists/Architects', 'Median Age': 34, 'Average Age': 36, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Leiden, Netherlands', 'Year': 1917},
+    {'Name': 'Leaders of the Russian Revolution', 'Median Age': 34, 'Average Age': 36, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Petrograd, Russia', 'Year': 1917},
+    {'Name': 'United Artists Founders', 'Median Age': 39.5, 'Average Age': 40, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Hollywood, CA, USA', 'Year': 1919},
+    {'Name': 'Group of Seven (Canadian Painters)', 'Median Age': 35, 'Average Age': 37, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Toronto, Canada', 'Year': 1920},
+    {'Name': 'Les Six (French Composers)', 'Median Age': 28, 'Average Age': 26, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1920},
+    {'Name': 'Nazi Party (NSDAP) Early Leadership', 'Median Age': 28, 'Average Age': 30, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Munich, Germany', 'Year': 1921},
+    {'Name': 'Bauhaus Masters (Early Appointments)', 'Median Age': 39, 'Average Age': 41, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Weimar, Germany', 'Year': 1922},
+    {'Name': 'Italian Fascist Party (PNF) Leadership', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Rome/Milan, Italy', 'Year': 1922},
+    {'Name': 'Surrealists', 'Median Age': 27, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1924},
+    {'Name': 'Solvay Conference Attendees (1927 Select)', 'Median Age': 42, 'Average Age': 45, 'Members': 11, 'Category': 'Science & Philosophy', 'Place': 'Brussels, Belgium', 'Year': 1927},
+    {'Name': 'Muslim Brotherhood (Early Core)', 'Median Age': 22, 'Average Age': 23, 'Members': 6, 'Category': 'Politics & Activism', 'Place': 'Ismailia, Egypt', 'Year': 1928},
+    {'Name': 'MoMA Founding Board', 'Median Age': 55, 'Average Age': 55, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1929},
+    {'Name': 'Vienna Circle', 'Median Age': 46, 'Average Age': 42, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'Vienna, Austria', 'Year': 1929},
+    {'Name': 'Frankfurt School (Inner Circle)', 'Median Age': 33, 'Average Age': 33, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': 'Frankfurt, Germany', 'Year': 1931},
+    {'Name': 'Group Theatre (NYC, Founding Members)', 'Median Age': 29, 'Average Age': 30, 'Members': 10, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1931},
+    {'Name': 'Partisan Review Founders (Relaunch)', 'Median Age': 30, 'Average Age': 30, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1937},
+    {'Name': 'Oxfam Founders (Oxford Committee for Famine Relief)', 'Median Age': 48, 'Average Age': 49, 'Members': 7, 'Category': 'Politics & Activism', 'Place': 'Oxford, UK', 'Year': 1942},
+    {'Name': 'Manhattan Project Leadership (Select)', 'Median Age': 44.5, 'Average Age': 45, 'Members': 6, 'Category': 'Science & Philosophy', 'Place': 'Los Alamos/Various, USA', 'Year': 1943},
+    {'Name': 'Abstract Expressionists (NY School, Core)', 'Median Age': 38, 'Average Age': 39, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1945},
+    {'Name': 'Actors Studio Founders', 'Median Age': 33, 'Average Age': 33, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1947},
+    {'Name': 'Indian Independence Leadership (INC Core)', 'Median Age': 58, 'Average Age': 59, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'New Delhi, India', 'Year': 1947},
+    {'Name': 'Key Figures in Founding State of Israel', 'Median Age': 54, 'Average Age': 59, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Tel Aviv, Israel', 'Year': 1948},
+    {'Name': 'COBRA Artists', 'Median Age': 26.5, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1948},
+    {'Name': 'DNA Structure Discovery Key Figures', 'Median Age': 35, 'Average Age': 33, 'Members': 4, 'Category': 'Science & Philosophy', 'Place': 'Cambridge/London, UK', 'Year': 1953},
+    {'Name': 'Team 10 (Architects)', 'Median Age': 35, 'Average Age': 34, 'Members': 7, 'Category': 'Arts & Culture', 'Place': 'Doorn, Netherlands', 'Year': 1954},
+    {'Name': 'Beat Generation Writers (Core)', 'Median Age': 31, 'Average Age': 32, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'NYC/San Francisco, USA', 'Year': 1955},
+    {'Name': 'Situationist International Founders', 'Median Age': 37, 'Average Age': 37, 'Members': 5, 'Category': 'Science & Philosophy', 'Place': "Cosio d'Arroscia, Italy", 'Year': 1957},
+    {'Name': 'Traitorous Eight (Fairchild Semi.)', 'Median Age': 31.5, 'Average Age': 31, 'Members': 8, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1957},
+    {'Name': 'ETA Founders', 'Median Age': 26, 'Average Age': 27, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Basque Country, Spain', 'Year': 1959},
+    {'Name': 'Oulipo (Potential Literature Workshop)', 'Median Age': 48, 'Average Age': 45, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Paris, France', 'Year': 1960},
+    {'Name': 'SNCC Founding Members (Student Nonviolent Coordinating Committee)', 'Median Age': 21, 'Average Age': 21, 'Members': 10, 'Category': 'Politics & Activism', 'Place': 'Raleigh, NC, USA', 'Year': 1960},
+    {'Name': 'Amnesty International Founders', 'Median Age': 40.5, 'Average Age': 43, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'London, UK', 'Year': 1961},
+    {'Name': 'Archigram (Architectural Group)', 'Median Age': 27, 'Average Age': 27, 'Members': 6, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1961},
+    {'Name': 'Fluxus (Early Core Group)', 'Median Age': 30, 'Average Age': 31, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Wiesbaden/NYC/Global', 'Year': 1962},
+    {'Name': 'PLO Founding Executive Committee', 'Median Age': 33, 'Average Age': 38, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Jerusalem/Cairo', 'Year': 1964},
+    {'Name': 'The Beatles (US Beatlemania Start)', 'Median Age': 23, 'Average Age': 23, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK / USA', 'Year': 1964},
+    {'Name': 'Grateful Dead (as Warlocks)', 'Median Age': 20, 'Average Age': 21, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Palo Alto, CA, USA', 'Year': 1965},
+    {'Name': 'Black Panther Party (Early Leaders)', 'Median Age': 24, 'Average Age': 26, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Oakland, CA, USA', 'Year': 1966},
+    {'Name': 'The Velvet Underground (Debut Album)', 'Median Age': 25, 'Average Age': 25, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1967},
+    {'Name': 'Intel Founders', 'Median Age': 35.5, 'Average Age': 36, 'Members': 4, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1968},
+    {'Name': 'Led Zeppelin', 'Median Age': 21, 'Average Age': 22, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1968},
+    {'Name': 'Stonewall/Early GLF Figures', 'Median Age': 24, 'Average Age': 24, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'New York City, USA', 'Year': 1969},
+    {'Name': 'Red Brigades (Brigate Rosse)', 'Median Age': 24, 'Average Age': 24, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Milan, Italy', 'Year': 1970},
+    {'Name': 'Queen (Classic Lineup Solidified)', 'Median Age': 24, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1971},
+    {'Name': 'Greenpeace Founders (Initial Voyage Core)', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Vancouver, Canada', 'Year': 1971},
+    {'Name': 'Médecins Sans Frontières (MSF) Founders', 'Median Age': 30.5, 'Average Age': 31, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Paris, France', 'Year': 1971},
+    {'Name': 'SAP Founders', 'Median Age': 32, 'Average Age': 32, 'Members': 5, 'Category': 'Technology', 'Place': 'Weinheim, Germany', 'Year': 1972},
+    {'Name': 'The Ramones', 'Median Age': 24, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'New York City, USA', 'Year': 1974},
+    {'Name': 'Khmer Rouge Leadership', 'Median Age': 49, 'Average Age': 48, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Phnom Penh, Cambodia', 'Year': 1975},
+    {'Name': 'Sex Pistols', 'Median Age': 19, 'Average Age': 19, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1975},
+    {'Name': 'Microsoft Founders', 'Median Age': 21, 'Average Age': 21, 'Members': 2, 'Category': 'Technology', 'Place': 'Albuquerque, NM, USA', 'Year': 1975},
+    {'Name': 'Apple Founders', 'Median Age': 26, 'Average Age': 30, 'Members': 3, 'Category': 'Technology', 'Place': 'Cupertino, CA, USA', 'Year': 1976},
+    {'Name': 'The Clash', 'Median Age': 21, 'Average Age': 22, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1976},
+    {'Name': 'Oracle Corporation Founders', 'Median Age': 33, 'Average Age': 34, 'Members': 3, 'Category': 'Technology', 'Place': 'Santa Clara, CA, USA', 'Year': 1977},
+    {'Name': 'Solidarity (Solidarność) Key Figures', 'Median Age': 35, 'Average Age': 36, 'Members': 5, 'Category': 'Politics & Activism', 'Place': 'Gdańsk, Poland', 'Year': 1980},
+    {'Name': 'Public Enemy', 'Median Age': 25, 'Average Age': 24, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Long Island, NY, USA', 'Year': 1985},
+    {'Name': 'Pixar (Early Leadership Team)', 'Median Age': 39, 'Average Age': 40, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Emeryville, CA, USA', 'Year': 1986},
+    {'Name': 'NWA (Niggaz Wit Attitudes) Core Members', 'Median Age': 21, 'Average Age': 21, 'Members': 5, 'Category': 'Arts & Culture', 'Place': 'Compton, CA, USA', 'Year': 1987},
+    {'Name': 'Hamas Founders', 'Median Age': 41, 'Average Age': 39, 'Members': 4, 'Category': 'Politics & Activism', 'Place': 'Gaza', 'Year': 1987},
+    {'Name': 'Young British Artists (YBAs, Freeze exhibit)', 'Median Age': 23, 'Average Age': 23, 'Members': 16, 'Category': 'Arts & Culture', 'Place': 'London, UK', 'Year': 1988},
+    {'Name': 'Nirvana (Nevermind Lineup)', 'Median Age': 23, 'Average Age': 23, 'Members': 3, 'Category': 'Arts & Culture', 'Place': 'Seattle, WA, USA', 'Year': 1991},
+    {'Name': 'Wu-Tang Clan', 'Median Age': 22, 'Average Age': 23, 'Members': 9, 'Category': 'Arts & Culture', 'Place': 'Staten Island, NYC, USA', 'Year': 1992},
+    {'Name': 'Netscape Founders (Early Team)', 'Median Age': 29, 'Average Age': 30, 'Members': 6, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 1994},
+    {'Name': 'Amazon Founder', 'Median Age': 30, 'Average Age': 30, 'Members': 1, 'Category': 'Technology', 'Place': 'Seattle, WA, USA', 'Year': 1994},
+    {'Name': 'Dogme 95 Filmmakers', 'Median Age': 38.5, 'Average Age': 38, 'Members': 4, 'Category': 'Arts & Culture', 'Place': 'Copenhagen, Denmark', 'Year': 1995},
+    {'Name': 'eBay Founder', 'Median Age': 28, 'Average Age': 28, 'Members': 1, 'Category': 'Technology', 'Place': 'San Jose, CA, USA', 'Year': 1995},
+    {'Name': 'Google Founders', 'Median Age': 25, 'Average Age': 25, 'Members': 2, 'Category': 'Technology', 'Place': 'Menlo Park, CA, USA', 'Year': 1998},
+    {'Name': 'Alibaba Founders (Core Group)', 'Median Age': 30.5, 'Average Age': 30, 'Members': 4, 'Category': 'Technology', 'Place': 'Hangzhou, China', 'Year': 1999},
+    {'Name': 'PayPal Mafia (Core Group)', 'Median Age': 28, 'Average Age': 28, 'Members': 7, 'Category': 'Technology', 'Place': 'Palo Alto, CA, USA', 'Year': 2000},
+    {'Name': 'Wikipedia Founders', 'Median Age': 33.5, 'Average Age': 34, 'Members': 2, 'Category': 'Technology', 'Place': 'Internet', 'Year': 2001},
+    {'Name': 'Facebook Founders', 'Median Age': 20.5, 'Average Age': 21, 'Members': 4, 'Category': 'Technology', 'Place': 'Cambridge, MA, USA', 'Year': 2004},
+    {'Name': 'Reddit Founders', 'Median Age': 20, 'Average Age': 21, 'Members': 3, 'Category': 'Technology', 'Place': 'Medford, MA, USA', 'Year': 2005},
+    {'Name': 'Twitter Founders', 'Median Age': 31, 'Average Age': 29, 'Members': 4, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2006},
+    {'Name': 'Spotify Founders', 'Median Age': 29.5, 'Average Age': 30, 'Members': 2, 'Category': 'Technology', 'Place': 'Stockholm, Sweden', 'Year': 2006},
+    {'Name': 'Dropbox Founders', 'Median Age': 23, 'Average Age': 23, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2007},
+    {'Name': 'Airbnb Founders', 'Median Age': 25, 'Average Age': 26, 'Members': 3, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2008},
+    {'Name': 'WhatsApp Founders', 'Median Age': 35, 'Average Age': 35, 'Members': 2, 'Category': 'Technology', 'Place': 'Mountain View, CA, USA', 'Year': 2009},
+    {'Name': 'Instagram Founders', 'Median Age': 25.5, 'Average Age': 26, 'Members': 2, 'Category': 'Technology', 'Place': 'San Francisco, CA, USA', 'Year': 2010}
+]
+
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# --- Bar Chart Code ---
+# Clean data types
+df['Median Age'] = pd.to_numeric(df['Median Age'], errors='coerce')
+df['Average Age'] = pd.to_numeric(df['Average Age'], errors='coerce')
+df['Members'] = pd.to_numeric(df['Members'], errors='coerce')
+df['Year'] = pd.to_numeric(df['Year'], errors='coerce')
+df['Category'] = df['Category'].astype(str).str.replace('/', ' / ') # Ensure category is string and format
+
+# Drop rows where essential plotting data might be missing after coercion
+df.dropna(subset=['Median Age', 'Category', 'Name', 'Year'], inplace=True)
+
+
+# Create a combined label for the y-axis
+df['Group Label'] = df['Name'] + ' (' + df['Year'].astype(int).astype(str) + ')' # Use int for year display
+
+# Sort data for plotting: primarily by Median Age
+df_sorted = df.sort_values(by='Median Age', ascending=True).reset_index(drop=True) # Reset index after sorting
+
+# Set plot style
+sns.set_style("whitegrid")
+
+# Define a high-contrast color palette
+palette = "tab10"
+
+# Create the horizontal bar chart
+# Increase figure height significantly to accommodate 100+ bars
+plt.figure(figsize=(12, 40)) # Further increased height
+
+bar_plot = sns.barplot(
+    x='Median Age',
+    y='Group Label', # Use combined label
+    data=df_sorted,
+    hue='Category', # Color bars by Category
+    palette=palette, # Use high-contrast palette
+    dodge=False, # Don't dodge bars as they are on separate lines
+    orient='h'
+)
+
+# Add titles and labels
+plt.title('Median Founding Age by Group (Ranked by Age, 105 Groups)', fontsize=16)
+plt.xlabel('Median Age of Founders', fontsize=12)
+plt.ylabel('Group (Founding Year)', fontsize=12) # Changed label
+plt.xticks(fontsize=10)
+plt.yticks(fontsize=8) # Make y-tick font size smaller
+
+# Add the value labels on the bars
+for index, row in df_sorted.iterrows():
+   value = row['Median Age']
+   if pd.notna(value): # Check if value is not NaN
+       # Use formatting to show one decimal place for non-integer ages
+       label_text = f'{value:.1f}' if value != int(value) else f'{int(value)}'
+       # Place text slightly after the bar end
+       plt.text(value + 0.3, index, label_text, va='center', fontsize=7) # Smaller font size for labels
+
+# Improve legend
+# Get handles and labels
+handles, labels = bar_plot.get_legend_handles_labels()
+# Create a unique legend (remove duplicate category labels)
+by_label = dict(zip(labels, handles))
+plt.legend(by_label.values(), by_label.keys(), title='Category', bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0.)
+
+
+# Adjust layout
+plt.tight_layout(rect=[0, 0, 0.85, 1]) # Adjust layout to make space for legend
+
+# Show the plot
+plt.show()
